@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
+    android:orientation="vertical"
+    android:padding="0dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/score_button"
+        style="@style/ButtonStatisticsActivity"
+        android:text="@string/statistics" />
+
+    <Button
+        android:id="@+id/basketball_button"
+        style="@style/ButtonBasketballActivity"
+        android:text="@string/basketball" />
+
+    <Button
+        android:id="@+id/football_button"
+        style="@style/ButtonFootballActivity"
+        android:text="@string/football" />
+
+    <Button
+        android:id="@+id/rugby_button"
+        style="@style/ButtonRugbyActivity"
+        android:text="@string/rugby" />
+</LinearLayout>

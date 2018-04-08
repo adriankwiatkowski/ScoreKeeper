@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">ScoreKeeper</string>
+    <string name="score">Score</string>
+    <string name="conversion">Conversion</string>
+    <string name="penalty">Penalty</string>
+    <string name="drop_goal">Drop goal</string>
+    <string name="rugby_try">Try</string>
+    <string name="foul">Foul</string>
+    <string name="offside">Offside</string>
+    <string name="corner_kick">Corner kick</string>
+    <string name="red_card">Red card</string>
+    <string name="yellow_card">yellow card</string>
+    <string name="goalkeeper_save">Goalkeeper save</string>
+    <string name="free_throw">Free throw</string>
+    <string name="basketball">Basketball</string>
+    <string name="rugby">Rugby</string>
+    <string name="football">Football</string>
+    <string name="two_points">two points</string>
+    <string name="three_points">three points</string>
+    <string name="goal">goal</string>
+    <string name="reset">reset</string>
+    <string name="statistics">Statistics</string>
+</resources>

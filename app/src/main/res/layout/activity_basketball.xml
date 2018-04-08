@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_basketball">
+
+    <Button
+        android:id="@+id/button_reset"
+        style="@style/ButtonReset"
+        android:text="@string/reset" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_free_throw_a"
+                style="@style/ButtonBasketball"
+                android:text="@string/free_throw" />
+
+            <Button
+                android:id="@+id/button_two_points_a"
+                style="@style/ButtonBasketball"
+                android:text="@string/two_points" />
+
+            <Button
+                android:id="@+id/button_three_points_a"
+                style="@style/ButtonBasketball"
+                android:text="@string/three_points" />
+
+            <Button
+                android:id="@+id/button_foul_a"
+                style="@style/ButtonBasketball"
+                android:text="@string/foul" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_free_throw_b"
+                style="@style/ButtonBasketball"
+                android:text="@string/free_throw" />
+
+            <Button
+                android:id="@+id/button_two_points_b"
+                style="@style/ButtonBasketball"
+                android:text="@string/two_points" />
+
+            <Button
+                android:id="@+id/button_three_points_b"
+                style="@style/ButtonBasketball"
+                android:text="@string/three_points" />
+
+            <Button
+                android:id="@+id/button_foul_b"
+                style="@style/ButtonBasketball"
+                android:text="@string/foul" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

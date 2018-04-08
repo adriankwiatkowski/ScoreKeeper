@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_rugby">
+
+    <Button
+        android:id="@+id/button_reset"
+        style="@style/ButtonReset"
+        android:text="@string/reset" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_conversion_a"
+                style="@style/ButtonRugby"
+                android:text="@string/conversion" />
+
+            <Button
+                android:id="@+id/button_penalty_a"
+                style="@style/ButtonRugby"
+                android:text="@string/penalty" />
+
+            <Button
+                android:id="@+id/button_drop_goal_a"
+                style="@style/ButtonRugby"
+                android:text="@string/drop_goal" />
+
+            <Button
+                android:id="@+id/button_try_a"
+                style="@style/ButtonRugby"
+                android:text="@string/rugby_try" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_conversion_b"
+                style="@style/ButtonRugby"
+                android:text="@string/conversion" />
+
+            <Button
+                android:id="@+id/button_penalty_b"
+                style="@style/ButtonRugby"
+                android:text="@string/penalty" />
+
+            <Button
+                android:id="@+id/button_drop_goal_b"
+                style="@style/ButtonRugby"
+                android:text="@string/drop_goal" />
+
+            <Button
+                android:id="@+id/button_try_b"
+                style="@style/ButtonRugby"
+                android:text="@string/rugby_try" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
