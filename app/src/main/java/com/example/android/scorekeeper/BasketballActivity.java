@@ -1,122 +1,109 @@
 package com.example.android.scorekeeper;
 
+import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 
-public class BasketballActivity extends AppCompatActivity implements View.OnClickListener {
+import static com.example.android.scorekeeper.data.DbContract.*;
+
+public class BasketballActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private String[] scoreTypes = new String[] {"score", "free throw", "two points", "three points", "foul"};
+
+    private static final int CURSOR_LOADER = 0;
+    private BasketballCursorAdapter mCursorAdapter;
 
     SharedPreferences mSharedPreferences;
     SharedPreferences.Editor mEditor;
-
-    static String BASKETBALL_SHARED_PREFERENCES_KEY = "basketballSharedPreferences";
-    static String BASKETBALL_TEAM_A_SCORE = "basketballScoreA";
-    static String BASKETBALL_TEAM_A_FOUL = "basketballFoulA";
-    static String BASKETBALL_TEAM_A_FREE_THROW = "basketballFreeThrowA";
-    static String BASKETBALL_TEAM_B_SCORE = "basketballScoreB";
-    static String BASKETBALL_TEAM_B_FOUL = "basketballFoulB";
-    static String BASKETBALL_TEAM_B_FREE_THROW = "basketballFreeThrowB";
-
-    int scoreTeamA, foulTeamA, freeThrowTeamA;
-    int scoreTeamB, foulTeamB, freeThrowTeamB;
-
-    Button buttonReset;
-    Button buttonLeftFreeThrow, buttonLeftTwo, buttonLeftThree, buttonLeftFoul;
-    Button buttonRightFreeThrow, buttonRightTwo, buttonRightThree, buttonRightFoul;
+    String PREFERENCES_KEY = "boolean";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basketball);
 
-        loadDataFromPreferences();
+        ListView listView = (ListView) findViewById(R.id.basketball_list);
+        mCursorAdapter = new BasketballCursorAdapter(this, null);
+        listView.setAdapter(mCursorAdapter);
 
-        buttonReset = findViewById(R.id.button_reset);
-        buttonReset.setOnClickListener(this);
-        buttonLeftFreeThrow = findViewById(R.id.button_free_throw_a);
-        buttonLeftFreeThrow.setOnClickListener(this);
-        buttonLeftTwo = findViewById(R.id.button_two_points_a);
-        buttonLeftTwo.setOnClickListener(this);
-        buttonLeftThree = findViewById(R.id.button_three_points_a);
-        buttonLeftThree.setOnClickListener(this);
-        buttonLeftFoul = findViewById(R.id.button_foul_a);
-        buttonLeftFoul.setOnClickListener(this);
-        buttonRightFreeThrow = findViewById(R.id.button_free_throw_b);
-        buttonRightFreeThrow.setOnClickListener(this);
-        buttonRightTwo = findViewById(R.id.button_two_points_b);
-        buttonRightTwo.setOnClickListener(this);
-        buttonRightThree = findViewById(R.id.button_three_points_b);
-        buttonRightThree.setOnClickListener(this);
-        buttonRightFoul = findViewById(R.id.button_foul_b);
-        buttonRightFoul.setOnClickListener(this);
+        Button buttonReset = findViewById(R.id.button_reset);
+        buttonReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetScore();
+            }
+        });
+
+        mSharedPreferences = getPreferences(MODE_PRIVATE);
+        boolean isTableEmpty = mSharedPreferences.getBoolean(PREFERENCES_KEY, false);
+
+        if (!isTableEmpty) {
+            insertItem(scoreTypes);
+        }
+
+        getLoaderManager().initLoader(CURSOR_LOADER, null, this);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.button_free_throw_a:
-                scoreTeamA++;
-                freeThrowTeamA++;
-                break;
-            case R.id.button_two_points_a:
-                scoreTeamA += 2;
-                break;
-            case R.id.button_three_points_a:
-                scoreTeamA += 3;
-                break;
-            case R.id.button_foul_a:
-                foulTeamA++;
-                break;
-            case R.id.button_free_throw_b:
-                scoreTeamB++;
-                freeThrowTeamB++;
-                break;
-            case R.id.button_two_points_b:
-                scoreTeamB += 2;
-                break;
-            case R.id.button_three_points_b:
-                scoreTeamB += 3;
-                break;
-            case R.id.button_foul_b:
-                foulTeamB++;
-                break;
-            case R.id.button_reset:
-                resetScore();
-                break;
+    private void insertItem(String[] scoreTypes) {
+        for (int i = 0; i < scoreTypes.length; i++) {
+            ContentValues values = new ContentValues();
+            values.put(SportsEntry.COLUMN_SPORT_TEXT_A, scoreTypes[i]);
+            values.put(SportsEntry.COLUMN_SPORT_SCORE_A, 0);
+            values.put(SportsEntry.COLUMN_SPORT_SCORE_B, 0);
+            values.put(SportsEntry.COLUMN_SPORT_TEXT_B, scoreTypes[i]);
+            getContentResolver().insert(SportsEntry.BASKETBALL_CONTENT_URI, values);
         }
     }
 
-    private void loadDataFromPreferences() {
-        mSharedPreferences = getSharedPreferences(BASKETBALL_SHARED_PREFERENCES_KEY, MODE_PRIVATE);
-        scoreTeamA = mSharedPreferences.getInt(BasketballActivity.BASKETBALL_TEAM_A_SCORE, 0);
-        freeThrowTeamA = mSharedPreferences.getInt(BasketballActivity.BASKETBALL_TEAM_A_FREE_THROW, 0);
-        foulTeamA = mSharedPreferences.getInt(BasketballActivity.BASKETBALL_TEAM_A_FOUL, 0);
-        scoreTeamB = mSharedPreferences.getInt(BasketballActivity.BASKETBALL_TEAM_B_SCORE, 0);
-        freeThrowTeamB = mSharedPreferences.getInt(BasketballActivity.BASKETBALL_TEAM_B_FREE_THROW, 0);
-        foulTeamB = mSharedPreferences.getInt(BasketballActivity.BASKETBALL_TEAM_B_FOUL, 0);
+    private void resetScore() {
+        for (int i = 0; i < scoreTypes.length; i++) {
+            ContentValues values = new ContentValues();
+            values.put(SportsEntry.COLUMN_SPORT_SCORE_A, 0);
+            values.put(SportsEntry.COLUMN_SPORT_SCORE_B, 0);
+            getContentResolver().update(SportsEntry.BASKETBALL_CONTENT_URI, values, null, null);
+        }
     }
 
-    private void resetScore() {
-        scoreTeamA = 0;
-        foulTeamA = 0;
-        freeThrowTeamA = 0;
-        scoreTeamB = 0;
-        foulTeamB = 0;
-        freeThrowTeamB = 0;
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projection = {
+                SportsEntry._ID,
+                SportsEntry.COLUMN_SPORT_TEXT_A,
+                SportsEntry.COLUMN_SPORT_SCORE_A,
+                SportsEntry.COLUMN_SPORT_SCORE_B,
+                SportsEntry.COLUMN_SPORT_TEXT_B};
+
+        return new CursorLoader(this,
+                SportsEntry.BASKETBALL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mCursorAdapter.swapCursor(null);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mEditor = mSharedPreferences.edit();
-        mEditor.putInt(BASKETBALL_TEAM_A_SCORE, scoreTeamA);
-        mEditor.putInt(BASKETBALL_TEAM_A_FOUL, foulTeamA);
-        mEditor.putInt(BASKETBALL_TEAM_A_FREE_THROW, freeThrowTeamA);
-        mEditor.putInt(BASKETBALL_TEAM_B_SCORE, scoreTeamB);
-        mEditor.putInt(BASKETBALL_TEAM_B_FOUL, foulTeamB);
-        mEditor.putInt(BASKETBALL_TEAM_B_FREE_THROW, freeThrowTeamB);
+        mEditor.putBoolean(PREFERENCES_KEY, true);
         mEditor.apply();
     }
 }

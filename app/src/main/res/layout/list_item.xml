@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_name_team_a"
+        style="@style/TextViewNameListItem"/>
+
+    <TextView
+        android:id="@+id/tv_score_team_a"
+        style="@style/TextViewScoreListItem"/>
+
+    <TextView
+        android:id="@+id/tv_score_team_b"
+        style="@style/TextViewScoreListItem"/>
+
+    <TextView
+        android:id="@+id/tv_name_team_b"
+        style="@style/TextViewNameListItem"/>
+
+</LinearLayout>

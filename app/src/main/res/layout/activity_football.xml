@@ -1,101 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_football">
+    android:background="@drawable/gradient_football"
+    tools:context=".FootballActivity">
+
+    <ListView
+        android:id="@+id/football_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <Button
         android:id="@+id/button_reset"
         style="@style/ButtonReset"
         android:text="@string/reset" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/button_goal_a"
-                style="@style/ButtonFootball"
-                android:text="@string/goal" />
-
-            <Button
-                android:id="@+id/button_foul_a"
-                style="@style/ButtonFootball"
-                android:text="@string/foul" />
-
-            <Button
-                android:id="@+id/button_corner_a"
-                style="@style/ButtonFootball"
-                android:text="@string/corner_kick" />
-
-            <Button
-                android:id="@+id/button_offside_a"
-                style="@style/ButtonFootball"
-                android:text="@string/offside" />
-
-            <Button
-                android:id="@+id/button_yellow_card_a"
-                style="@style/ButtonFootball"
-                android:text="@string/yellow_card" />
-
-            <Button
-                android:id="@+id/button_red_card_a"
-                style="@style/ButtonFootball"
-                android:text="@string/red_card" />
-
-            <Button
-                android:id="@+id/button_goalkeeper_save_a"
-                style="@style/ButtonFootball"
-                android:text="@string/goalkeeper_save" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/button_goal_b"
-                style="@style/ButtonFootball"
-                android:text="@string/goal" />
-
-            <Button
-                android:id="@+id/button_foul_b"
-                style="@style/ButtonFootball"
-                android:text="@string/foul" />
-
-            <Button
-                android:id="@+id/button_corner_b"
-                style="@style/ButtonFootball"
-                android:text="@string/corner_kick" />
-
-            <Button
-                android:id="@+id/button_offside_b"
-                style="@style/ButtonFootball"
-                android:text="@string/offside" />
-
-            <Button
-                android:id="@+id/button_yellow_card_b"
-                style="@style/ButtonFootball"
-                android:text="@string/yellow_card" />
-
-            <Button
-                android:id="@+id/button_red_card_b"
-                style="@style/ButtonFootball"
-                android:text="@string/red_card" />
-
-            <Button
-                android:id="@+id/button_goalkeeper_save_b"
-                style="@style/ButtonFootball"
-                android:text="@string/goalkeeper_save" />
-        </LinearLayout>
-    </LinearLayout>
 </RelativeLayout>
