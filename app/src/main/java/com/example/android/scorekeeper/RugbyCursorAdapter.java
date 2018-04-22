@@ -92,20 +92,24 @@ public class RugbyCursorAdapter extends CursorAdapter {
     private void updateScore(Context context, Cursor cursor, int clickCount, int increaseBy,
                              String teamColumn) {
         clickCount ++;
+        int cursorPosition = cursor.getPosition();
         ContentValues values = new ContentValues();
         values.put(teamColumn, clickCount);
         int id = cursor.getInt(cursor.getColumnIndex(SportsEntry._ID));
         context.getContentResolver().update(RUGBY_CONTENT_URI, values, "_id=" + id, null);
 
-        int scoreTeamPosition = 0;
-        cursor.moveToPosition(scoreTeamPosition);
-        int scoreColumnIndex = cursor.getColumnIndex(teamColumn);
-        int currentScore = cursor.getInt(scoreColumnIndex);
-        currentScore += increaseBy;
-        ContentValues scoreValues = new ContentValues();
-        scoreValues.put(teamColumn, currentScore);
+        if (increaseBy != 0) {
+            //Position 0 = score
+            int scoreTeamPosition = 0;
+            cursor.moveToPosition(scoreTeamPosition);
+            int scoreColumnIndex = cursor.getColumnIndex(teamColumn);
+            int currentScore = cursor.getInt(scoreColumnIndex);
+            currentScore += increaseBy;
+            ContentValues scoreValues = new ContentValues();
+            scoreValues.put(teamColumn, currentScore);
 
-        int scoreTeamId = 1;
-        context.getContentResolver().update(RUGBY_CONTENT_URI, scoreValues, "_id=" + scoreTeamId, null);
+            int scoreTeamId = id - cursorPosition;
+            context.getContentResolver().update(RUGBY_CONTENT_URI, scoreValues, "_id=" + scoreTeamId, null);
+        }
     }
 }

@@ -11,24 +11,11 @@
     <style name="HeadingText">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:gravity">center</item>
+        <item name="android:gravity">center_horizontal</item>
         <item name="android:textSize">42sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/headingTextColor</item>
-    </style>
-
-    <style name="SubText">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">55dp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/subTextColor</item>
-    </style>
-
-    <style name="View">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">5dp</item>
-        <item name="android:background">@color/viewColor</item>
     </style>
 
     <style name="ButtonActivity">
@@ -54,24 +41,6 @@
         <item name="android:background">@drawable/gradient_statistics</item>
     </style>
 
-    <style name="ButtonBasketball">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">4dp</item>
-    </style>
-
-    <style name="ButtonFootball">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">4dp</item>
-    </style>
-
-    <style name="ButtonRugby">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">4dp</item>
-    </style>
-
     <style name="ButtonReset">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -80,17 +49,31 @@
         <item name="android:layout_centerHorizontal">true</item>
     </style>
 
-    <style name="TextViewNameListItem">
-        <item name="android:layout_width">0dp</item>
+    <style name="TextItemList">
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">2</item>
-        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextViewScoreListItem">
+    <style name="TextViewNameItemList" parent="TextItemList">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">2</item>
+    </style>
+
+    <style name="TextViewScoreItemList" parent="TextItemList">
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="CustomListView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:dividerHeight">3sp</item>
+    </style>
+
+    <style name="BasketballListView" parent="CustomListView">
+        <item name="divider">@color/basketballDividerColor</item>
     </style>
 </resources>

@@ -2,33 +2,57 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/gradient_statistics">
+    android:background="@drawable/gradient_statistics"
+    android:orientation="vertical">
 
-    <TextView
-        style="@style/HeadingText"
-        android:text="@string/basketball"/>
-
-    <ListView
-        android:id="@+id/basketball_list"
+    <LinearLayout
+        android:id="@+id/basketball_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        style="@style/HeadingText"
-        android:text="@string/football"/>
+        <TextView
+            style="@style/HeadingText"
+            android:text="@string/basketball" />
 
-    <ListView
-        android:id="@+id/football_list"
+        <ListView
+            android:id="@+id/basketball_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/football_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        style="@style/HeadingText"
-        android:text="@string/rugby"/>
+        <TextView
+            style="@style/HeadingText"
+            android:text="@string/football" />
 
-    <ListView
-        android:id="@+id/rugby_list"
+        <ListView
+            android:id="@+id/football_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rugby_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/HeadingText"
+            android:text="@string/rugby" />
+
+        <ListView
+            android:id="@+id/rugby_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

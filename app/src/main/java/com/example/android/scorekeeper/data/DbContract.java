@@ -37,9 +37,9 @@ public class DbContract {
         public static final String FOOTBALL_CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FOOTBALL;
 
-        public static final String BASKETBALL_TABLE_NAME = "basketball";
-        public static final String FOOTBALL_TABLE_NAME = "football";
-        public static final String RUGBY_TABLE_NAME = "rugby";
+        public static final String BASKETBALL_TABLE_NAME = "basketballTable";
+        public static final String FOOTBALL_TABLE_NAME = "footballTable";
+        public static final String RUGBY_TABLE_NAME = "rugbyTable";
 
         public static final String _ID = BaseColumns._ID;
         public static final String COLUMN_SPORT_TEXT_A = "textA";

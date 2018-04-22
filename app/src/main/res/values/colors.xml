@@ -4,6 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="headingTextColor">#212121</color>
-    <color name="subTextColor">#eceff1</color>
-    <color name="viewColor">#d50000</color>
+    <color name="basketballDividerColor">#ffc500</color>
 </resources>

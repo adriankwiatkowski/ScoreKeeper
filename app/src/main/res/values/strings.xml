@@ -20,4 +20,16 @@
     <string name="goal">goal</string>
     <string name="reset">reset</string>
     <string name="statistics">Statistics</string>
+    <string name="action_delete_rugby">Delete Rugby Table</string>
+    <string name="action_delete_basketball">Delete Basketball Table</string>
+    <string name="action_delete_football">Delete Football Table</string>
+    <string name="delete_dialog_msg">Delete this table?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_table_failed">Error with deleting table</string>
+    <string name="delete_table_successful">Table deleted</string>
+    <string name="action_delete">Delete Table</string>
+    <string name="action_create">Create Table</string>
+    <string name="create">Create</string>
+    <string name="table">Table</string>
 </resources>

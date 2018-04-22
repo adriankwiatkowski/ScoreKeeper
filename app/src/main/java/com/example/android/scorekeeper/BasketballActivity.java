@@ -1,109 +1,89 @@
 package com.example.android.scorekeeper;
 
-import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.example.android.scorekeeper.data.DbHelper;
+import com.example.android.scorekeeper.utilities.BasketballLoader;
+import com.example.android.scorekeeper.utilities.DialogUtils;
+
 import static com.example.android.scorekeeper.data.DbContract.*;
 
-public class BasketballActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BasketballActivity extends AppCompatActivity {
 
-    private String[] scoreTypes = new String[] {"score", "free throw", "two points", "three points", "foul"};
+    public static String[] scoreTypes = new String[] {"score", "free throw", "two points", "three points", "foul"};
 
     private static final int CURSOR_LOADER = 0;
     private BasketballCursorAdapter mCursorAdapter;
+    private ListView mListView;
 
-    SharedPreferences mSharedPreferences;
-    SharedPreferences.Editor mEditor;
-    String PREFERENCES_KEY = "boolean";
+    private SharedPreferences mSharedPreferences;
+    public static String SHARED_PREFERENCES_KEY = "basketballKey";
+    public static String IS_TABLE_EXISTS_KEY = "basketballBoolean";
+    private boolean isTableNotEmpty;
+    private BasketballLoader basketballLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basketball);
 
-        ListView listView = (ListView) findViewById(R.id.basketball_list);
+        mListView = (ListView) findViewById(R.id.basketball_list);
         mCursorAdapter = new BasketballCursorAdapter(this, null);
-        listView.setAdapter(mCursorAdapter);
+        mListView.setAdapter(mCursorAdapter);
 
         Button buttonReset = findViewById(R.id.button_reset);
         buttonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resetScore();
+                DialogUtils.resetScore(scoreTypes,
+                        SportsEntry.BASKETBALL_CONTENT_URI,
+                        BasketballActivity.this);
             }
         });
 
-        mSharedPreferences = getPreferences(MODE_PRIVATE);
-        boolean isTableEmpty = mSharedPreferences.getBoolean(PREFERENCES_KEY, false);
+        insertTablesIfNotExists();
 
-        if (!isTableEmpty) {
-            insertItem(scoreTypes);
-        }
-
-        getLoaderManager().initLoader(CURSOR_LOADER, null, this);
+        basketballLoader = new BasketballLoader(mCursorAdapter, this);
+        getSupportLoaderManager().initLoader(CURSOR_LOADER, null, basketballLoader);
     }
 
-    private void insertItem(String[] scoreTypes) {
-        for (int i = 0; i < scoreTypes.length; i++) {
-            ContentValues values = new ContentValues();
-            values.put(SportsEntry.COLUMN_SPORT_TEXT_A, scoreTypes[i]);
-            values.put(SportsEntry.COLUMN_SPORT_SCORE_A, 0);
-            values.put(SportsEntry.COLUMN_SPORT_SCORE_B, 0);
-            values.put(SportsEntry.COLUMN_SPORT_TEXT_B, scoreTypes[i]);
-            getContentResolver().insert(SportsEntry.BASKETBALL_CONTENT_URI, values);
-        }
-    }
-
-    private void resetScore() {
-        for (int i = 0; i < scoreTypes.length; i++) {
-            ContentValues values = new ContentValues();
-            values.put(SportsEntry.COLUMN_SPORT_SCORE_A, 0);
-            values.put(SportsEntry.COLUMN_SPORT_SCORE_B, 0);
-            getContentResolver().update(SportsEntry.BASKETBALL_CONTENT_URI, values, null, null);
+    private void insertTablesIfNotExists() {
+        mSharedPreferences = getSharedPreferences(SHARED_PREFERENCES_KEY, MODE_PRIVATE);
+        isTableNotEmpty = mSharedPreferences.getBoolean(IS_TABLE_EXISTS_KEY, false);
+        if (!isTableNotEmpty) {
+            DialogUtils.showInsertDialog(scoreTypes,
+                    SportsEntry.BASKETBALL_CONTENT_URI,
+                    this,
+                    mSharedPreferences,
+                    IS_TABLE_EXISTS_KEY,
+                    null);
         }
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection = {
-                SportsEntry._ID,
-                SportsEntry.COLUMN_SPORT_TEXT_A,
-                SportsEntry.COLUMN_SPORT_SCORE_A,
-                SportsEntry.COLUMN_SPORT_SCORE_B,
-                SportsEntry.COLUMN_SPORT_TEXT_B};
-
-        return new CursorLoader(this,
-                SportsEntry.BASKETBALL_CONTENT_URI,
-                projection,
-                null,
-                null,
-                null);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_sport, menu);
+        return true;
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursorAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mCursorAdapter.swapCursor(null);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mEditor = mSharedPreferences.edit();
-        mEditor.putBoolean(PREFERENCES_KEY, true);
-        mEditor.apply();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_delete) {
+            DialogUtils.showDeleteConfirmationDialog(SportsEntry.BASKETBALL_CONTENT_URI,
+                    this,
+                    mSharedPreferences,
+                    IS_TABLE_EXISTS_KEY,
+                    null,
+                    true);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

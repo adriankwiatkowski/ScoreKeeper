@@ -176,6 +176,7 @@ public class DbProvider extends ContentProvider {
                 break;
             case BASKETBALL:
                 rowsDeleted = database.delete(SportsEntry.BASKETBALL_TABLE_NAME, selection, selectionArgs);
+                break;
             case BASKETBALL_ID:
                 selection = SportsEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
