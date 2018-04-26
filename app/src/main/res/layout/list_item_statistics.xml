@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/tv_header"
+        style="@style/HeadingText"
+        android:textSize="24sp"
+        tools:text="Game 1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tv_name_team_a"
+        style="@style/TextViewNameItemList"
+        tools:text="@string/score"/>
+
+    <TextView
+        android:id="@+id/tv_score_team_a"
+        style="@style/TextViewScoreItemList"
+        tools:text="10"/>
+
+    <TextView
+        android:id="@+id/tv_score_team_b"
+        style="@style/TextViewScoreItemList"
+        tools:text="100"/>
+
+    <TextView
+        android:id="@+id/tv_name_team_b"
+        style="@style/TextViewNameItemList"
+        tools:text="@string/score"/>
+    </LinearLayout>
+
+</LinearLayout>

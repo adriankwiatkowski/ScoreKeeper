@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="basketball_array">
+        <item>@string/score</item>
+        <item>@string/free_throw</item>
+        <item>@string/two_points</item>
+        <item>@string/three_points</item>
+        <item>@string/foul</item>
+    </string-array>
+
+    <string-array name="football_array">
+        <item>@string/score</item>
+        <item>@string/goal</item>
+        <item>@string/foul</item>
+        <item>@string/corner_kick</item>
+        <item>@string/offside</item>
+        <item>@string/yellow_card</item>
+        <item>@string/red_card</item>
+        <item>@string/goalkeeper_save</item>
+    </string-array>
+
+    <string-array name="rugby_array">
+        <item>@string/score</item>
+        <item>@string/conversion</item>
+        <item>@string/penalty</item>
+        <item>@string/drop_goal</item>
+        <item>@string/rugby_try</item>
+    </string-array>
+</resources>

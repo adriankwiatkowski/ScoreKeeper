@@ -1,6 +1,5 @@
 package com.example.android.scorekeeper;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -11,25 +10,25 @@ import android.widget.ListView;
 
 import com.example.android.scorekeeper.data.DbContract.SportsEntry;
 import com.example.android.scorekeeper.utilities.DialogUtils;
+import com.example.android.scorekeeper.utilities.RugbyCursorAdapter;
 import com.example.android.scorekeeper.utilities.RugbyLoader;
 
 public class RugbyActivity extends AppCompatActivity {
 
-    public static String[] scoreTypes = new String[] {"score", "conversion", "penalty", "drop goal", "try"};
+    public static String[] scoreTypes;
 
     private static final int CURSOR_LOADER = 2;
     private RugbyCursorAdapter mCursorAdapter;
     private ListView mListView;
 
-    private SharedPreferences mSharedPreferences;
-    public static String SHARED_PREFERENCES_KEY = "rugbyKey";
-    public static String IS_TABLE_EXISTS_KEY = "rugbyBoolean";
-    private boolean isTableNotEmpty;
+    private RugbyLoader rugbyLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rugby);
+
+        scoreTypes = getResources().getStringArray(R.array.rugby_array);
 
         mListView = (ListView) findViewById(R.id.rugby_list);
         mCursorAdapter = new RugbyCursorAdapter(this, null);
@@ -39,30 +38,15 @@ public class RugbyActivity extends AppCompatActivity {
         buttonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogUtils.resetScore(scoreTypes,
+                DialogUtils.resetScore(
+                        scoreTypes,
                         SportsEntry.RUGBY_CONTENT_URI,
                         RugbyActivity.this);
             }
         });
 
-        insertTablesIfNotExists();
-
-        RugbyLoader rugbyLoader = new RugbyLoader(mCursorAdapter, this);
+        rugbyLoader = new RugbyLoader(mCursorAdapter, this);
         getSupportLoaderManager().initLoader(CURSOR_LOADER, null, rugbyLoader);
-    }
-
-    private void insertTablesIfNotExists() {
-        mSharedPreferences = getSharedPreferences(SHARED_PREFERENCES_KEY, MODE_PRIVATE);
-        isTableNotEmpty = mSharedPreferences.getBoolean(IS_TABLE_EXISTS_KEY, false);
-
-        if (!isTableNotEmpty) {
-            DialogUtils.showInsertDialog(scoreTypes,
-                    SportsEntry.RUGBY_CONTENT_URI,
-                    this,
-                    mSharedPreferences,
-                    IS_TABLE_EXISTS_KEY,
-                    null);
-        }
     }
 
     @Override
@@ -73,14 +57,16 @@ public class RugbyActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_delete) {
-            DialogUtils.showDeleteConfirmationDialog(SportsEntry.RUGBY_CONTENT_URI,
-                    this,
-                    mSharedPreferences,
-                    IS_TABLE_EXISTS_KEY,
-                    null,
-                    true);
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_create:
+                DialogUtils.showInsertDialog(scoreTypes,
+                        this,
+                        SportsEntry.RUGBY_CONTENT_URI);
+                return true;
+            case R.id.action_delete:
+                DialogUtils.showDeleteConfirmationDialog(this,
+                        SportsEntry.RUGBY_CONTENT_URI, 0);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

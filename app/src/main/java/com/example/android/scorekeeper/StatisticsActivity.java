@@ -1,166 +1,156 @@
 package com.example.android.scorekeeper;
 
-import android.content.SharedPreferences;
+import android.content.ContentUris;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.scorekeeper.data.DbContract.SportsEntry;
-import com.example.android.scorekeeper.utilities.BasketballLoader;
 import com.example.android.scorekeeper.utilities.DialogUtils;
-import com.example.android.scorekeeper.utilities.FootballLoader;
-import com.example.android.scorekeeper.utilities.RugbyLoader;
+import com.example.android.scorekeeper.utilities.StatisticsCursorAdapter;
 
-public class StatisticsActivity extends AppCompatActivity {
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry.BASKETBALL_CONTENT_URI;
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry.COLUMN_SPORT_SCORE_A;
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry.COLUMN_SPORT_SCORE_B;
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry.COLUMN_SPORT_TEXT_A;
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry.COLUMN_SPORT_TEXT_B;
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry.FOOTBALL_CONTENT_URI;
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry.RUGBY_CONTENT_URI;
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry._ID;
+
+public class StatisticsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String[] PROJECTION = {
+            _ID,
+            COLUMN_SPORT_TEXT_A,
+            COLUMN_SPORT_SCORE_A,
+            COLUMN_SPORT_SCORE_B,
+            COLUMN_SPORT_TEXT_B
+    };
+    private static String SELECTION;
 
     private static final int BASKETBALL_CURSOR_LOADER = 0;
     private static final int FOOTBALL_CURSOR_LOADER = 1;
     private static final int RUGBY_CURSOR_LOADER = 2;
 
-    private LinearLayout mBasketballLayout;
-    private LinearLayout mRugbyLayout;
-    private LinearLayout mFootballLayout;
-
     private ListView mBasketballListView;
     private ListView mRugbyListView;
     private ListView mFootballListView;
 
-    private BasketballCursorAdapter mBasketballAdapter;
-    private RugbyCursorAdapter mRugbyAdapter;
-    private FootballCursorAdapter mFootballAdapter;
-
-    private SharedPreferences mBasketballSharedPreferences;
-    private SharedPreferences mRugbySharedPreferences;
-    private SharedPreferences mFootballSharedPreferences;
-
-    private boolean isBasketTableExists;
-    private boolean isRugbyTableExists;
-    private boolean isFootTableExists;
+    private StatisticsCursorAdapter mBasketballAdapter;
+    private StatisticsCursorAdapter mRugbyAdapter;
+    private StatisticsCursorAdapter mFootballAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
-        mBasketballLayout = findViewById(R.id.basketball_layout);
-        mRugbyLayout = findViewById(R.id.rugby_layout);
-        mFootballLayout = findViewById(R.id.football_layout);
+        SELECTION = COLUMN_SPORT_TEXT_A + " = '" + getString(R.string.score) + "'";
 
+        mBasketballAdapter = new StatisticsCursorAdapter(this, null);
         mBasketballListView = findViewById(R.id.basketball_list);
-        mRugbyListView = findViewById(R.id.rugby_list);
-        mFootballListView = findViewById(R.id.football_list);
-
-        mBasketballAdapter = new BasketballCursorAdapter(this, null);
         mBasketballListView.setAdapter(mBasketballAdapter);
+        mBasketballListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DialogUtils.showDeleteConfirmationDialog(view.getContext(), SportsEntry.BASKETBALL_CONTENT_URI, id);
+            }
+        });
 
-        mRugbyAdapter = new RugbyCursorAdapter(this, null);
-        mRugbyListView.setAdapter(mRugbyAdapter);
-
-        mFootballAdapter = new FootballCursorAdapter(this, null);
+        mFootballAdapter = new StatisticsCursorAdapter(this, null);
+        mFootballListView = findViewById(R.id.football_list);
         mFootballListView.setAdapter(mFootballAdapter);
+        mFootballListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DialogUtils.showDeleteConfirmationDialog(view.getContext(), SportsEntry.FOOTBALL_CONTENT_URI, id);
+            }
+        });
 
-        insertTablesIfNotExists();
+        mRugbyAdapter = new StatisticsCursorAdapter(this, null);
+        mRugbyListView = findViewById(R.id.rugby_list);
+        mRugbyListView.setAdapter(mRugbyAdapter);
+        mRugbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DialogUtils.showDeleteConfirmationDialog(view.getContext(), SportsEntry.RUGBY_CONTENT_URI, id);
+            }
+        });
 
-        BasketballLoader basketballLoader = new BasketballLoader(mBasketballAdapter, this);
-        getSupportLoaderManager().initLoader(BASKETBALL_CURSOR_LOADER, null, basketballLoader);
-        FootballLoader footballLoader = new FootballLoader(mFootballAdapter, this);
-        getSupportLoaderManager().initLoader(FOOTBALL_CURSOR_LOADER, null, footballLoader);
-        RugbyLoader rugbyLoader = new RugbyLoader(mRugbyAdapter, this);
-        getSupportLoaderManager().initLoader(RUGBY_CURSOR_LOADER, null, rugbyLoader);
+        getSupportLoaderManager().initLoader(BASKETBALL_CURSOR_LOADER, null, this);
+        getSupportLoaderManager().initLoader(FOOTBALL_CURSOR_LOADER, null, this);
+        getSupportLoaderManager().initLoader(RUGBY_CURSOR_LOADER, null, this);
     }
 
-    private void insertTablesIfNotExists() {
-        mBasketballSharedPreferences = getSharedPreferences(BasketballActivity.SHARED_PREFERENCES_KEY, MODE_PRIVATE);
-        mRugbySharedPreferences = getSharedPreferences(RugbyActivity.SHARED_PREFERENCES_KEY, MODE_PRIVATE);
-        mFootballSharedPreferences = getSharedPreferences(FootballActivity.SHARED_PREFERENCES_KEY, MODE_PRIVATE);
-        isBasketTableExists = mBasketballSharedPreferences.getBoolean(BasketballActivity.IS_TABLE_EXISTS_KEY, false);
-        isRugbyTableExists = mRugbySharedPreferences.getBoolean(RugbyActivity.IS_TABLE_EXISTS_KEY, false);
-        isFootTableExists = mFootballSharedPreferences.getBoolean(FootballActivity.IS_TABLE_EXISTS_KEY, false);
-        if (!isRugbyTableExists) {
-            mRugbyLayout.setVisibility(View.GONE);
-            DialogUtils.showInsertDialog(RugbyActivity.scoreTypes,
-                    SportsEntry.RUGBY_CONTENT_URI,
-                    this,
-                    mRugbySharedPreferences,
-                    RugbyActivity.IS_TABLE_EXISTS_KEY,
-                    mRugbyLayout);
-        }
-        if (!isFootTableExists) {
-            mFootballLayout.setVisibility(View.GONE);
-            DialogUtils.showInsertDialog(FootballActivity.scoreTypes,
-                    SportsEntry.FOOTBALL_CONTENT_URI,
-                    this,
-                    mFootballSharedPreferences,
-                    FootballActivity.IS_TABLE_EXISTS_KEY,
-                    mFootballLayout);
-        }
-        if (!isBasketTableExists) {
-            mBasketballLayout.setVisibility(View.GONE);
-            DialogUtils.showInsertDialog(BasketballActivity.scoreTypes,
-                    SportsEntry.BASKETBALL_CONTENT_URI,
-                    this,
-                    mBasketballSharedPreferences,
-                    BasketballActivity.IS_TABLE_EXISTS_KEY,
-                    mBasketballLayout);
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case BASKETBALL_CURSOR_LOADER:
+                return new CursorLoader(
+                        this,
+                        SportsEntry.BASKETBALL_CONTENT_URI,
+                        PROJECTION,
+                        SELECTION,
+                        null,
+                        null
+                );
+            case FOOTBALL_CURSOR_LOADER:
+                return new CursorLoader(
+                        this,
+                        SportsEntry.FOOTBALL_CONTENT_URI,
+                        PROJECTION,
+                        SELECTION,
+                        null,
+                        null);
+            case RUGBY_CURSOR_LOADER:
+                return new CursorLoader(
+                        this,
+                        SportsEntry.RUGBY_CONTENT_URI,
+                        PROJECTION,
+                        SELECTION,
+                        null,
+                        null);
+            default:
+                return null;
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_statistics, menu);
-        return true;
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        switch (loader.getId()) {
+            case BASKETBALL_CURSOR_LOADER:
+                mBasketballAdapter.swapCursor(data);
+                break;
+            case FOOTBALL_CURSOR_LOADER:
+                mFootballAdapter.swapCursor(data);
+                break;
+            case RUGBY_CURSOR_LOADER:
+                mRugbyAdapter.swapCursor(data);
+                break;
+        }
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        invalidateOptionsMenu();
-        isBasketTableExists = mBasketballSharedPreferences.getBoolean(BasketballActivity.IS_TABLE_EXISTS_KEY, false);
-        isRugbyTableExists = mRugbySharedPreferences.getBoolean(RugbyActivity.IS_TABLE_EXISTS_KEY, false);
-        isFootTableExists = mFootballSharedPreferences.getBoolean(FootballActivity.IS_TABLE_EXISTS_KEY, false);
-        if (!isBasketTableExists) {
-            menu.findItem(R.id.action_delete_basketball).setVisible(false);
+    public void onLoaderReset(Loader<Cursor> loader) {
+        switch (loader.getId()) {
+            case BASKETBALL_CURSOR_LOADER:
+                mBasketballAdapter.swapCursor(null);
+                break;
+            case FOOTBALL_CURSOR_LOADER:
+                mFootballAdapter.swapCursor(null);
+                break;
+            case RUGBY_CURSOR_LOADER:
+                mRugbyAdapter.swapCursor(null);
+                break;
         }
-        if (!isRugbyTableExists) {
-            menu.findItem(R.id.action_delete_rugby).setVisible(false);
-        }
-        if (!isFootTableExists) {
-            menu.findItem(R.id.action_delete_football).setVisible(false);
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_delete_basketball:
-                DialogUtils.showDeleteConfirmationDialog(SportsEntry.BASKETBALL_CONTENT_URI,
-                        this,
-                        mBasketballSharedPreferences,
-                        BasketballActivity.IS_TABLE_EXISTS_KEY,
-                        mBasketballLayout,
-                        false);
-                return true;
-            case R.id.action_delete_rugby:
-                DialogUtils.showDeleteConfirmationDialog(SportsEntry.RUGBY_CONTENT_URI,
-                        this,
-                        mRugbySharedPreferences,
-                        RugbyActivity.IS_TABLE_EXISTS_KEY,
-                        mRugbyLayout,
-                        false);
-                return true;
-            case R.id.action_delete_football:
-                DialogUtils.showDeleteConfirmationDialog(SportsEntry.FOOTBALL_CONTENT_URI,
-                        this,
-                        mFootballSharedPreferences,
-                        FootballActivity.IS_TABLE_EXISTS_KEY,
-                        mFootballLayout,
-                        false);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

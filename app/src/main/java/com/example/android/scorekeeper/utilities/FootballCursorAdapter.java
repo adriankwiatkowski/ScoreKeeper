@@ -1,7 +1,8 @@
-package com.example.android.scorekeeper;
+package com.example.android.scorekeeper.utilities;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import com.example.android.scorekeeper.R;
 import com.example.android.scorekeeper.data.DbContract;
 import com.example.android.scorekeeper.data.DbContract.SportsEntry;
 
@@ -71,36 +73,47 @@ public class FootballCursorAdapter extends CursorAdapter {
     private void updateDatabase(Context context, Cursor cursor, int currentScore, String textString,
                                 String teamColumn) {
         int increaseBy = 0;
-        switch (textString) {
-            case "goal":
-                increaseBy = 1;
-                break;
-            case "foul":
-                increaseBy = 0;
-                break;
-            case "corner kick":
-                increaseBy = 0;
-                break;
-            case "offside":
-                increaseBy = 0;
-                break;
-            case "yellow card":
-                increaseBy = 0;
-                break;
-            case "red card":
-                increaseBy = 0;
-                break;
-            case "goalkeeper save":
-                increaseBy = 0;
-                break;
-            case "score":
-                return;
+        int positionFromTeamScore = 0;
+        Resources res = context.getResources();
+        String[] types = res.getStringArray(R.array.football_array);
+        String score = types[0];
+        String goal = types[1];
+        String foul = types[2];
+        String cornerKick = types[3];
+        String offside = types[4];
+        String yellowCard = types[5];
+        String redCard = types[6];
+        String goalkeeperSave = types[7];
+        if (textString.equals(goal)) {
+            increaseBy = 1;
+            positionFromTeamScore = 1;
+        } else if (textString.equals(foul)) {
+            increaseBy = 0;
+            positionFromTeamScore = 2;
+        } else if (textString.equals(cornerKick)) {
+            increaseBy = 0;
+            positionFromTeamScore = 3;
+        } else if (textString.equals(offside)) {
+            increaseBy = 0;
+            positionFromTeamScore = 4;
+        } else if (textString.equals(yellowCard)) {
+            increaseBy = 0;
+            positionFromTeamScore = 5;
+        } else if (textString.equals(redCard)) {
+            increaseBy = 0;
+            positionFromTeamScore = 6;
+        } else if (textString.equals(goalkeeperSave)) {
+            increaseBy = 0;
+            positionFromTeamScore = 7;
+        } else if (textString.equals(score)) {
+            return;
         }
-        updateScore(context, cursor, currentScore, increaseBy, teamColumn);
+
+        updateScore(context, cursor, currentScore, increaseBy, positionFromTeamScore, teamColumn);
     }
 
     private void updateScore(Context context, Cursor cursor, int clickCount, int increaseBy,
-                             String teamColumn) {
+                             int positionFromTeamScore, String teamColumn) {
         clickCount ++;
         int cursorPosition = cursor.getPosition();
         ContentValues values = new ContentValues();
@@ -109,16 +122,14 @@ public class FootballCursorAdapter extends CursorAdapter {
         context.getContentResolver().update(FOOTBALL_CONTENT_URI, values, "_id=" + id, null);
 
         if (increaseBy != 0) {
-            //Position 0 = score
-            int scoreTeamPosition = 0;
+            int scoreTeamPosition = cursorPosition - positionFromTeamScore;
             cursor.moveToPosition(scoreTeamPosition);
-            int scoreColumnIndex = cursor.getColumnIndex(teamColumn);
-            int currentScore = cursor.getInt(scoreColumnIndex);
+            int currentScore = cursor.getInt(cursor.getColumnIndex(teamColumn));
             currentScore += increaseBy;
             ContentValues scoreValues = new ContentValues();
             scoreValues.put(teamColumn, currentScore);
 
-            int scoreTeamId = id - cursorPosition;
+            int scoreTeamId = id - positionFromTeamScore;
             context.getContentResolver().update(FOOTBALL_CONTENT_URI, scoreValues, "_id=" + scoreTeamId, null);
         }
     }

@@ -1,7 +1,8 @@
-package com.example.android.scorekeeper;
+package com.example.android.scorekeeper.utilities;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,14 +10,14 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.example.android.scorekeeper.data.DbContract;
-import com.example.android.scorekeeper.data.DbContract.SportsEntry;
+import com.example.android.scorekeeper.R;
 
-import static com.example.android.scorekeeper.data.DbContract.SportsEntry.RUGBY_CONTENT_URI;
+import static com.example.android.scorekeeper.data.DbContract.*;
+import static com.example.android.scorekeeper.data.DbContract.SportsEntry.BASKETBALL_CONTENT_URI;
 
-public class RugbyCursorAdapter extends CursorAdapter {
+public class BasketballCursorAdapter extends CursorAdapter {
 
-    public RugbyCursorAdapter(Context context, Cursor c) {
+    public BasketballCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
     }
 
@@ -69,47 +70,52 @@ public class RugbyCursorAdapter extends CursorAdapter {
 
     private void updateDatabase(Context context, Cursor cursor, int currentScore, String textString,
                                 String teamColumn) {
+        Resources res = context.getResources();
+        String[] types = res.getStringArray(R.array.basketball_array);
+        String score = types[0];
+        String freeThrow = types[1];
+        String twoPoints = types[2];
+        String threePoints = types[3];
+        String foul = types[4];
         int increaseBy = 0;
-        switch (textString) {
-            case "conversion":
-                increaseBy = 2;
-                break;
-            case "penalty":
-                increaseBy = 3;
-                break;
-            case "drop goal":
-                increaseBy = 3;
-                break;
-            case "try":
-                increaseBy = 5;
-                break;
-            case "score":
-                return;
+        int positionFromTeamScore = 0;
+        if (textString.equals(freeThrow)) {
+            increaseBy = 1;
+            positionFromTeamScore = 1;
+        } else if (textString.equals(twoPoints)) {
+            increaseBy = 2;
+            positionFromTeamScore = 2;
+        } else if (textString.equals(threePoints)) {
+            increaseBy = 3;
+            positionFromTeamScore = 3;
+        } else if (textString.equals(foul)) {
+            increaseBy = 0;
+            positionFromTeamScore = 4;
+        } else if (textString.equals(score)) {
+            return;
         }
-        updateScore(context, cursor, currentScore, increaseBy, teamColumn);
+        updateScore(context, cursor, currentScore, increaseBy, positionFromTeamScore, teamColumn);
     }
 
     private void updateScore(Context context, Cursor cursor, int clickCount, int increaseBy,
-                             String teamColumn) {
+                             int positionFromTeamScore, String teamColumn) {
         clickCount ++;
         int cursorPosition = cursor.getPosition();
         ContentValues values = new ContentValues();
         values.put(teamColumn, clickCount);
         int id = cursor.getInt(cursor.getColumnIndex(SportsEntry._ID));
-        context.getContentResolver().update(RUGBY_CONTENT_URI, values, "_id=" + id, null);
+        context.getContentResolver().update(BASKETBALL_CONTENT_URI, values, "_id=" + id, null);
 
         if (increaseBy != 0) {
-            //Position 0 = score
-            int scoreTeamPosition = 0;
+            int scoreTeamPosition = cursorPosition - positionFromTeamScore;
             cursor.moveToPosition(scoreTeamPosition);
-            int scoreColumnIndex = cursor.getColumnIndex(teamColumn);
-            int currentScore = cursor.getInt(scoreColumnIndex);
+            int currentScore = cursor.getInt(cursor.getColumnIndex(teamColumn));
             currentScore += increaseBy;
             ContentValues scoreValues = new ContentValues();
             scoreValues.put(teamColumn, currentScore);
 
-            int scoreTeamId = id - cursorPosition;
-            context.getContentResolver().update(RUGBY_CONTENT_URI, scoreValues, "_id=" + scoreTeamId, null);
+            int scoreTeamId = id - positionFromTeamScore;
+            context.getContentResolver().update(BASKETBALL_CONTENT_URI, scoreValues, "_id=" + scoreTeamId, null);
         }
     }
 }
