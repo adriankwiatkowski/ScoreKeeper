@@ -35,7 +35,7 @@ public class StatisticsActivity extends AppCompatActivity implements LoaderManag
             COLUMN_SPORT_SCORE_B,
             COLUMN_SPORT_TEXT_B
     };
-    private static String SELECTION;
+    private String SELECTION;
 
     private static final int BASKETBALL_CURSOR_LOADER = 0;
     private static final int FOOTBALL_CURSOR_LOADER = 1;
