@@ -114,7 +114,7 @@ public class FootballCursorAdapter extends CursorAdapter {
 
     private void updateScore(Context context, Cursor cursor, int clickCount, int increaseBy,
                              int positionFromTeamScore, String teamColumn) {
-        clickCount ++;
+        clickCount++;
         int cursorPosition = cursor.getPosition();
         ContentValues values = new ContentValues();
         values.put(teamColumn, clickCount);
